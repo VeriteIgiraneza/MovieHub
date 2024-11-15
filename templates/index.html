@@ -219,5 +219,53 @@
   };
 </script>
 </script>
+
+// Add to index.html before closing body tag
+<script>
+let currentPage = 1;
+const moviesGrid = document.querySelector('.movies-grid');
+let loadingMore = false;
+
+function createMovieCard(movie) {
+    // Create movie card HTML structure
+    const card = document.createElement('article');
+    card.className = 'movie-card';
+    // Add movie content structure similar to existing cards
+    return card;
+}
+
+async function loadMoreMovies() {
+    if (loadingMore) return;
+    loadingMore = true;
+
+    try {
+        const response = await fetch(`/load_more?page=${currentPage + 1}`);
+        const data = await response.json();
+
+        data.movies.forEach(movie => {
+            moviesGrid.appendChild(createMovieCard(movie));
+        });
+
+        currentPage++;
+
+        if (!data.hasMore) {
+            document.getElementById('load-more-btn').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error loading more movies:', error);
+    } finally {
+        loadingMore = false;
+    }
+}
+
+// Add load more button
+const loadMoreBtn = document.createElement('button');
+loadMoreBtn.id = 'load-more-btn';
+loadMoreBtn.className = 'load-more-button';
+loadMoreBtn.textContent = 'Load More Movies';
+loadMoreBtn.onclick = loadMoreMovies;
+document.querySelector('.results-section').appendChild(loadMoreBtn);
+</script>
+
 </body>
 </html>

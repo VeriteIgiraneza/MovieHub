@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, g, url_for, session
+
+from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
 import mysql.connector
 from flask_bcrypt import Bcrypt
 import re
@@ -207,7 +208,7 @@ def index():
             LEFT JOIN Stars s ON ms.StarID = s.StarID
             GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
             ORDER BY r.Rating DESC
-            LIMIT 100
+            LIMIT 45
         """
         cursor.execute(movies_query)
         movies = cursor.fetchall()
@@ -364,6 +365,53 @@ def dashboard():
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
         return redirect(url_for('index'))
+
+
+# Add to app.py
+@app.route('/load_more')
+def load_more():
+    page = int(request.args.get('page', 1))
+    limit = 45
+    offset = (page - 1) * limit
+
+    try:
+        db, cursor = get_db()
+        query = """
+            SELECT DISTINCT
+                m.ID, m.Title, ROUND(r.Rating, 1) as Rating,
+                m.Runtime, GROUP_CONCAT(DISTINCT g.GenreName) as Genres,
+                m.Metascore, m.Plot,
+                GROUP_CONCAT(DISTINCT d.DirectorName) as Directors,
+                GROUP_CONCAT(DISTINCT s.StarName) as Stars,
+                r.Votes, CONCAT('$', FORMAT(m.Gross, 2)) as Gross,
+                m.Link
+            FROM Movies m
+            LEFT JOIN Ratings r ON m.ID = r.MovieID
+            LEFT JOIN MovieGenres mg ON m.ID = mg.MovieID
+            LEFT JOIN Genres g ON mg.GenreID = g.GenreID
+            LEFT JOIN MovieDirectors md ON m.ID = md.MovieID
+            LEFT JOIN Directors d ON md.DirectorID = d.DirectorID
+            LEFT JOIN MovieStars ms ON m.ID = ms.MovieID
+            LEFT JOIN Stars s ON ms.StarID = s.StarID
+            GROUP BY m.ID
+            ORDER BY r.Rating DESC
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(query, (limit, offset))
+        movies = cursor.fetchall()
+
+        # Check if there are more movies
+        cursor.execute("SELECT COUNT(*) FROM Movies")
+        total = cursor.fetchone()[0]
+        has_more = (offset + limit) < total
+
+        return jsonify({
+            'movies': movies,
+            'hasMore': has_more
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
