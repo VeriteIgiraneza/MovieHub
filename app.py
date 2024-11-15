@@ -371,7 +371,7 @@ def dashboard():
 @app.route('/load_more')
 def load_more():
     page = int(request.args.get('page', 1))
-    limit = 45
+    limit = 9999
     offset = (page - 1) * limit
 
     try:
