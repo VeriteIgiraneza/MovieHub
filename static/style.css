@@ -654,3 +654,28 @@ textarea {
     background: #fee2e2;
     color: #dc2626;
 }
+
+
+
+
+
+.loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner.visible {
+            display: block;
+        }
+
+        #movies-counter {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .observer-target {
+            height: 20px;
+            margin-top: 20px;
+        }
