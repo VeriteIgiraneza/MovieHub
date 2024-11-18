@@ -454,29 +454,29 @@ def build_movie_query(search_params, page=1):
 
     return final_query, params
 
-@app.route('/')
-def index():
-    try:
-        db, cursor = get_db()
-        # Get genres for dropdown
-        genres = get_genres()
-
-        # Get initial set of movies
-        query, params = build_movie_query({}, page=1)
-        movies = execute_query(cursor, query, params)
-
-        # Get total count of movies
-        cursor.execute("SELECT COUNT(DISTINCT m.ID) FROM Movies m")
-        total_movies = cursor.fetchone()[0]
-
-        return render_template('index.html',
-                             movies=movies,
-                             genres=genres,
-                             total_movies=total_movies,
-                             user=session.get('username'))
-    except Exception as e:
-        logger.error(f"Error in index route: {e}")
-        return render_template('index.html', error="An error occurred while loading movies")
+# @app.route('/')
+# def index():
+#     try:
+#         db, cursor = get_db()
+#         # Get genres for dropdown
+#         genres = get_genres()
+#
+#         # Get initial set of movies
+#         query, params = build_movie_query({}, page=1)
+#         movies = execute_query(cursor, query, params)
+#
+#         # Get total count of movies
+#         cursor.execute("SELECT COUNT(DISTINCT m.ID) FROM Movies m")
+#         total_movies = cursor.fetchone()[0]
+#
+#         return render_template('index.html',
+#                              movies=movies,
+#                              genres=genres,
+#                              total_movies=total_movies,
+#                              user=session.get('username'))
+#     except Exception as e:
+#         logger.error(f"Error in index route: {e}")
+#         return render_template('index.html', error="An error occurred while loading movies")
 
 @app.route('/load_more')
 def load_more():
