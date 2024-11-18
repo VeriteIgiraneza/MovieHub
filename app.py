@@ -177,52 +177,52 @@ def get_genre_name(genre_id):
 
 
 
-# @app.route('/')
-# def index():
-#     try:
-#         db, cursor = get_db()
-#         # Get genres for dropdown
-#         genres_query = "SELECT GenreID, GenreName FROM Genres ORDER BY GenreName"
-#         cursor.execute(genres_query)
-#         genres = cursor.fetchall()
-#
-#         # Get movies with all related data
-#         movies_query = """
-#             SELECT DISTINCT
-#                 m.ID,
-#                 m.Title,
-#                 ROUND(r.Rating, 1) as Rating,
-#                 m.Runtime,
-#                 GROUP_CONCAT(DISTINCT g.GenreName ORDER BY g.GenreName SEPARATOR ', ') as Genres,
-#                 m.Metascore,
-#                 m.Plot,
-#                 GROUP_CONCAT(DISTINCT d.DirectorName ORDER BY d.DirectorName SEPARATOR ', ') as Directors,
-#                 GROUP_CONCAT(DISTINCT s.StarName ORDER BY s.StarName SEPARATOR ', ') as Stars,
-#                 r.Votes,
-#                 CONCAT('$', FORMAT(m.Gross, 2)) as Gross,
-#                 m.Link
-#             FROM Movies m
-#             LEFT JOIN Ratings r ON m.ID = r.MovieID
-#             LEFT JOIN MovieGenres mg ON m.ID = mg.MovieID
-#             LEFT JOIN Genres g ON mg.GenreID = g.GenreID
-#             LEFT JOIN MovieDirectors md ON m.ID = md.MovieID
-#             LEFT JOIN Directors d ON md.DirectorID = d.DirectorID
-#             LEFT JOIN MovieStars ms ON m.ID = ms.MovieID
-#             LEFT JOIN Stars s ON ms.StarID = s.StarID
-#             GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
-#             ORDER BY r.Rating DESC
-#             LIMIT 9999
-#         """
-#         cursor.execute(movies_query)
-#         movies = cursor.fetchall()
-#
-#         return render_template('index.html',
-#                              movies=movies,
-#                              genres=genres,
-#                              user=session.get('username'))
-#     except Exception as e:
-#         logger.error(f"Error in index route: {e}")
-#         return render_template('index.html', error="An error occurred while searching movies")
+@app.route('/')
+def index():
+    try:
+        db, cursor = get_db()
+        # Get genres for dropdown
+        genres_query = "SELECT GenreID, GenreName FROM Genres ORDER BY GenreName"
+        cursor.execute(genres_query)
+        genres = cursor.fetchall()
+
+        # Get movies with all related data
+        movies_query = """
+            SELECT DISTINCT
+                m.ID,
+                m.Title,
+                ROUND(r.Rating, 1) as Rating,
+                m.Runtime,
+                GROUP_CONCAT(DISTINCT g.GenreName ORDER BY g.GenreName SEPARATOR ', ') as Genres,
+                m.Metascore,
+                m.Plot,
+                GROUP_CONCAT(DISTINCT d.DirectorName ORDER BY d.DirectorName SEPARATOR ', ') as Directors,
+                GROUP_CONCAT(DISTINCT s.StarName ORDER BY s.StarName SEPARATOR ', ') as Stars,
+                r.Votes,
+                CONCAT('$', FORMAT(m.Gross, 2)) as Gross,
+                m.Link
+            FROM Movies m
+            LEFT JOIN Ratings r ON m.ID = r.MovieID
+            LEFT JOIN MovieGenres mg ON m.ID = mg.MovieID
+            LEFT JOIN Genres g ON mg.GenreID = g.GenreID
+            LEFT JOIN MovieDirectors md ON m.ID = md.MovieID
+            LEFT JOIN Directors d ON md.DirectorID = d.DirectorID
+            LEFT JOIN MovieStars ms ON m.ID = ms.MovieID
+            LEFT JOIN Stars s ON ms.StarID = s.StarID
+            GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
+            ORDER BY r.Rating DESC
+            LIMIT 9999
+        """
+        cursor.execute(movies_query)
+        movies = cursor.fetchall()
+
+        return render_template('index.html',
+                             movies=movies,
+                             genres=genres,
+                             user=session.get('username'))
+    except Exception as e:
+        logger.error(f"Error in index route: {e}")
+        return render_template('index.html', error="An error occurred while searching movies")
 
 
 @app.route('/filter')
