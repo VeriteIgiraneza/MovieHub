@@ -225,54 +225,7 @@ def index():
         return render_template('index.html', error="An error occurred while searching movies")
 
 
-# @app.route('/filter')
-# def filter_movies():
-#     try:
-#         min_rating = request.args.get('min_rating')
-#         max_rating = request.args.get('max_rating')
-#         genre = request.args.get('genre')
-#         sort = request.args.get('sort', 'rating_desc')
-#
-#         search_params = {'sort': sort}
-#         rating_range = None
-#         genre_name = None
-#
-#         if min_rating or max_rating:
-#             if min_rating and not validate_rating(min_rating):
-#                 return render_template('index.html', error="Invalid minimum rating")
-#             if max_rating and not validate_rating(max_rating):
-#                 return render_template('index.html', error="Invalid maximum rating")
-#
-#             search_params['min_rating'] = min_rating
-#             search_params['max_rating'] = max_rating
-#
-#             if min_rating and max_rating:
-#                 rating_range = f"{min_rating} - {max_rating}"
-#             elif min_rating:
-#                 rating_range = f"{min_rating}+"
-#             else:
-#                 rating_range = f"Up to {max_rating}"
-#
-#         if genre:
-#             search_params['genre'] = genre
-#             genre_name = get_genre_name(genre)
-#
-#         db, cursor = get_db()
-#         query, params = build_movie_query(search_params)
-#         movies = execute_query(cursor, query, params)
-#         genres = get_genres()
-#
-#         return render_template('index.html',
-#                                movies=movies,
-#                                genres=genres,
-#                                filter_applied=True,
-#                                rating_range=rating_range,
-#                                selected_genre=genre,
-#                                genre_name=genre_name)
-#     except Exception as e:
-#         logger.error(f"Error in filter route: {e}")
-#         return render_template('index.html', error="An error occurred while searching movies")
-
+pad
 @app.route('/search')
 def search():
     try:
