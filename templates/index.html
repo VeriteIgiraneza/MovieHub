@@ -160,113 +160,37 @@
            </div>
        </section>
    </main>
+<script>
+       function updateSort(value) {
+           const currentUrl = new URL(window.location.href);
+           currentUrl.searchParams.set('sort', value);
+           window.location.href = currentUrl.toString();
+       }
 
-<!--   <script>-->
-<!--       function updateSort(value) {-->
-<!--           const currentUrl = new URL(window.location.href);-->
-<!--           currentUrl.searchParams.set('sort', value);-->
-<!--           window.location.href = currentUrl.toString();-->
-<!--       }-->
+       function toggleDetails(button) {
+           const card = button.closest('.movie-card');
+           const content = card.querySelector('.collapsible-content');
+           const isExpanded = content.classList.toggle('expanded');
+           button.textContent = isExpanded ? 'Hide Details' : 'Show Details';
+       }
 
-<!--       function toggleDetails(button) {-->
-<!--           const card = button.closest('.movie-card');-->
-<!--           const content = card.querySelector('.collapsible-content');-->
-<!--           const isExpanded = content.classList.toggle('expanded');-->
-<!--           button.textContent = isExpanded ? 'Hide Details' : 'Show Details';-->
-<!--       }-->
+       function showSearch(type) {
+           const textSearch = document.getElementById('text-search');
+           const filterSearch = document.getElementById('filter-search');
+           const buttons = document.querySelectorAll('.tab-btn');
 
-<!--       function showSearch(type) {-->
-<!--           const textSearch = document.getElementById('text-search');-->
-<!--           const filterSearch = document.getElementById('filter-search');-->
-<!--           const buttons = document.querySelectorAll('.tab-btn');-->
-
-<!--           if (type === 'text') {-->
-<!--               textSearch.classList.remove('hidden');-->
-<!--               filterSearch.classList.add('hidden');-->
-<!--               buttons[0].classList.add('active');-->
-<!--               buttons[1].classList.remove('active');-->
-<!--           } else {-->
-<!--               textSearch.classList.add('hidden');-->
-<!--               filterSearch.classList.remove('hidden');-->
-<!--               buttons[0].classList.remove('active');-->
-<!--               buttons[1].classList.add('active');-->
-<!--           }-->
-<!--       }-->
-
-<!--       // Load More functionality-->
-<!--       let currentPage = 1;-->
-<!--       const moviesGrid = document.querySelector('.movies-grid');-->
-<!--       let loadingMore = false;-->
-
-<!--       function createMovieCard(movie) {-->
-<!--           return `-->
-<!--               <article class="movie-card">-->
-<!--                   <div class="movie-header">-->
-<!--                       <h3>${movie[1]}</h3>-->
-<!--                       <div class="rating">-->
-<!--                           <i class="fas fa-star"></i>-->
-<!--                           <span>${movie[2] || 'N/A'}</span>-->
-<!--                       </div>-->
-<!--                   </div>-->
-<!--                   <div class="movie-details">-->
-<!--                       <p><i class="fas fa-clock"></i> ${movie[3] || 'N/A'}</p>-->
-<!--                       <p><i class="fas fa-film"></i> ${movie[4] || 'N/A'}</p>-->
-<!--                       <p><i class="fas fa-chart-line"></i> Metascore: ${movie[5] || 'N/A'}</p>-->
-<!--                       <div class="collapsible-content">-->
-<!--                           <p class="plot"><i class="fas fa-book"></i> ${movie[6] || 'N/A'}</p>-->
-<!--                           <p><i class="fas fa-video"></i> ${movie[7] || 'N/A'}</p>-->
-<!--                           <p><i class="fas fa-user"></i> ${movie[8] || 'N/A'}</p>-->
-<!--                           <p><i class="fas fa-poll"></i> ${movie[9] || '0'} votes</p>-->
-<!--                           <p><i class="fas fa-dollar-sign"></i> ${movie[10] || 'N/A'}</p>-->
-<!--                       </div>-->
-<!--                       <div class="card-actions">-->
-<!--                           <button class="btn-details" onclick="toggleDetails(this)">Show Details</button>-->
-<!--                           <a href="${movie[11]}" target="_blank" class="btn-link">-->
-<!--                               <i class="fas fa-external-link-alt"></i> Learn More-->
-<!--                           </a>-->
-<!--                       </div>-->
-<!--                   </div>-->
-<!--               </article>-->
-<!--           `;-->
-<!--       }-->
-
-<!--       async function loadMoreMovies() {-->
-<!--           if (loadingMore) return;-->
-<!--           loadingMore = true;-->
-
-<!--           const loadMoreBtn = document.getElementById('load-more-btn');-->
-<!--           loadMoreBtn.textContent = 'Loading...';-->
-
-<!--           try {-->
-<!--               const response = await fetch(`/load_more?page=${currentPage + 1}`);-->
-<!--               const data = await response.json();-->
-
-<!--               data.movies.forEach(movie => {-->
-<!--                   moviesGrid.innerHTML += createMovieCard(movie);-->
-<!--               });-->
-
-<!--               currentPage++;-->
-
-<!--               if (!data.hasMore) {-->
-<!--                   loadMoreBtn.style.display = 'none';-->
-<!--               } else {-->
-<!--                   loadMoreBtn.textContent = 'Load More Movies';-->
-<!--               }-->
-<!--           } catch (error) {-->
-<!--               console.error('Error loading more movies:', error);-->
-<!--               loadMoreBtn.textContent = 'Error Loading Movies';-->
-<!--           } finally {-->
-<!--               loadingMore = false;-->
-<!--           }-->
-<!--       }-->
-
-<!--       // Add load more button-->
-<!--       const loadMoreBtn = document.createElement('button');-->
-<!--       loadMoreBtn.id = 'load-more-btn';-->
-<!--       loadMoreBtn.className = 'load-more-button';-->
-<!--       loadMoreBtn.textContent = 'Load More Movies';-->
-<!--       loadMoreBtn.onclick = loadMoreMovies;-->
-<!--       document.querySelector('.results-section').appendChild(loadMoreBtn);-->
-<!--   </script>-->
+           if (type === 'text') {
+               textSearch.classList.remove('hidden');
+               filterSearch.classList.add('hidden');
+               buttons[0].classList.add('active');
+               buttons[1].classList.remove('active');
+           } else {
+               textSearch.classList.add('hidden');
+               filterSearch.classList.remove('hidden');
+               buttons[0].classList.remove('active');
+               buttons[1].classList.add('active');
+           }
+       }
+   </script>
 </body>
 </html>

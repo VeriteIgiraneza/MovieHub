@@ -270,7 +270,6 @@ def filter_movies():
         logger.error(f"Error in filter route: {e}")
         return render_template('index.html', error="An error occurred while searching movies")
 
-
 @app.route('/search')
 def search():
     try:
@@ -302,7 +301,6 @@ def search():
         logger.error(f"Error in search route: {e}")
         return render_template('index.html', error="An error occurred while searching movies")
 
-
 @app.teardown_appcontext
 def teardown_db(exception):
     db = g.pop('db', None)
@@ -313,21 +311,16 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('index.html', error="Page not found"), 404
-
 
 @app.errorhandler(500)
 def internal_server_error(e):
     return render_template('index.html', error="Internal server error"), 500
 
 
-# Add these new routes to your existing Python file
-
 @app.route('/dashboard')
-# @login_required  # This ensures only logged-in users can access
 def dashboard():
     try:
         db, cursor = get_db()
