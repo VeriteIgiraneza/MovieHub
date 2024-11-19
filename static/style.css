@@ -267,9 +267,9 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-/*.collapsible-content.expanded {*/
-/*    max-height: 500px;*/
-/*}*/
+.collapsible-content.expanded {
+    max-height: 500px;
+}
 
 .card-actions {
     display: flex;
