@@ -261,14 +261,16 @@ body {
 }
 
 .collapsible-content {
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
 }
 
 .collapsible-content.expanded {
-    display: block;
+    max-height: 500px;
 }
 
 .card-actions {
@@ -395,9 +397,11 @@ input:focus {
 }
 
 /* Animation for card expansion */
-.collapsible-content {
-    transition: all 0.3s ease-in-out;
-}
+/*.collapsible-content {*/
+/*    max-height: 0;*/
+/*    overflow: hidden;*/
+/*    transition: max-height 0.3s ease-out;*/
+/*}*/
 
 .rating-inputs input::-webkit-outer-spin-button,
 .rating-inputs input::-webkit-inner-spin-button {
@@ -494,9 +498,6 @@ input:focus {
     font-weight: 500;
 }
 
-.hidden {
-    display: none;
-}
 
 .dashboard-container {
     max-width: 1200px;
@@ -634,48 +635,3 @@ textarea {
     border-radius: var(--radius);
     resize: vertical;
 }
-
-.hidden {
-    display: none;
-}
-
-
-
-
-
-.alert {
-    padding: 1rem;
-    border-radius: var(--radius);
-    margin-bottom: 1rem;
-    transition: opacity 0.5s;
-}
-
-.alert-error {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-
-
-
-
-.loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading-spinner.visible {
-            display: block;
-        }
-
-        #movies-counter {
-            text-align: center;
-            margin: 10px 0;
-            color: #666;
-        }
-
-        .observer-target {
-            height: 20px;
-            margin-top: 20px;
-        }
