@@ -160,130 +160,113 @@
            </div>
        </section>
    </main>
-<script>
-    let currentPage = 1;
-        let loading = false;
-        let hasMore = true;
-        const moviesGrid = document.querySelector('.movies-grid');
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        const loadedCountElement = document.getElementById('loaded-count');
-        const totalCountElement = document.getElementById('total-count');
 
-       function updateSort(value) {
-           const currentUrl = new URL(window.location.href);
-           currentUrl.searchParams.set('sort', value);
-           window.location.href = currentUrl.toString();
-       }
+<!--   <script>-->
+<!--       function updateSort(value) {-->
+<!--           const currentUrl = new URL(window.location.href);-->
+<!--           currentUrl.searchParams.set('sort', value);-->
+<!--           window.location.href = currentUrl.toString();-->
+<!--       }-->
 
-       function toggleDetails(button) {
-           const card = button.closest('.movie-card');
-           const content = card.querySelector('.collapsible-content');
-           const isExpanded = content.classList.toggle('expanded');
-           button.textContent = isExpanded ? 'Hide Details' : 'Show Details';
-       }
+<!--       function toggleDetails(button) {-->
+<!--           const card = button.closest('.movie-card');-->
+<!--           const content = card.querySelector('.collapsible-content');-->
+<!--           const isExpanded = content.classList.toggle('expanded');-->
+<!--           button.textContent = isExpanded ? 'Hide Details' : 'Show Details';-->
+<!--       }-->
 
-       function showSearch(type) {
-           const textSearch = document.getElementById('text-search');
-           const filterSearch = document.getElementById('filter-search');
-           const buttons = document.querySelectorAll('.tab-btn');
+<!--       function showSearch(type) {-->
+<!--           const textSearch = document.getElementById('text-search');-->
+<!--           const filterSearch = document.getElementById('filter-search');-->
+<!--           const buttons = document.querySelectorAll('.tab-btn');-->
 
-           if (type === 'text') {
-               textSearch.classList.remove('hidden');
-               filterSearch.classList.add('hidden');
-               buttons[0].classList.add('active');
-               buttons[1].classList.remove('active');
-           } else {
-               textSearch.classList.add('hidden');
-               filterSearch.classList.remove('hidden');
-               buttons[0].classList.remove('active');
-               buttons[1].classList.add('active');
-           }
-       }
-       function createMovieCard(movie) {
-            return `
-                <article class="movie-card">
-                    <div class="movie-header">
-                        <h3>${movie.title}</h3>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <span>${movie.rating || 'N/A'}</span>
-                        </div>
-                    </div>
-                    <div class="movie-details">
-                        <p><i class="fas fa-clock"></i> ${movie.runtime || 'N/A'}</p>
-                        <p><i class="fas fa-film"></i> ${movie.genres || 'N/A'}</p>
-                        <p><i class="fas fa-chart-line"></i> Metascore: ${movie.metascore || 'N/A'}</p>
-                        <div class="collapsible-content">
-                            <p class="plot"><i class="fas fa-book"></i> ${movie.plot || 'N/A'}</p>
-                            <p><i class="fas fa-video"></i> ${movie.directors || 'N/A'}</p>
-                            <p><i class="fas fa-user"></i> ${movie.stars || 'N/A'}</p>
-                            <p><i class="fas fa-poll"></i> ${movie.votes || '0'} votes</p>
-                            <p><i class="fas fa-dollar-sign"></i> ${movie.gross || 'N/A'}</p>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn-details" onclick="toggleDetails(this)">Show Details</button>
-                            <a href="${movie.link}" target="_blank" class="btn-link">
-                                <i class="fas fa-external-link-alt"></i> Learn More
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            `;
-        }
+<!--           if (type === 'text') {-->
+<!--               textSearch.classList.remove('hidden');-->
+<!--               filterSearch.classList.add('hidden');-->
+<!--               buttons[0].classList.add('active');-->
+<!--               buttons[1].classList.remove('active');-->
+<!--           } else {-->
+<!--               textSearch.classList.add('hidden');-->
+<!--               filterSearch.classList.remove('hidden');-->
+<!--               buttons[0].classList.remove('active');-->
+<!--               buttons[1].classList.add('active');-->
+<!--           }-->
+<!--       }-->
 
-        async function loadMoreMovies() {
-            if (loading || !hasMore) return;
+<!--       // Load More functionality-->
+<!--       let currentPage = 1;-->
+<!--       const moviesGrid = document.querySelector('.movies-grid');-->
+<!--       let loadingMore = false;-->
 
-            loading = true;
-            loadingSpinner.classList.add('visible');
+<!--       function createMovieCard(movie) {-->
+<!--           return `-->
+<!--               <article class="movie-card">-->
+<!--                   <div class="movie-header">-->
+<!--                       <h3>${movie[1]}</h3>-->
+<!--                       <div class="rating">-->
+<!--                           <i class="fas fa-star"></i>-->
+<!--                           <span>${movie[2] || 'N/A'}</span>-->
+<!--                       </div>-->
+<!--                   </div>-->
+<!--                   <div class="movie-details">-->
+<!--                       <p><i class="fas fa-clock"></i> ${movie[3] || 'N/A'}</p>-->
+<!--                       <p><i class="fas fa-film"></i> ${movie[4] || 'N/A'}</p>-->
+<!--                       <p><i class="fas fa-chart-line"></i> Metascore: ${movie[5] || 'N/A'}</p>-->
+<!--                       <div class="collapsible-content">-->
+<!--                           <p class="plot"><i class="fas fa-book"></i> ${movie[6] || 'N/A'}</p>-->
+<!--                           <p><i class="fas fa-video"></i> ${movie[7] || 'N/A'}</p>-->
+<!--                           <p><i class="fas fa-user"></i> ${movie[8] || 'N/A'}</p>-->
+<!--                           <p><i class="fas fa-poll"></i> ${movie[9] || '0'} votes</p>-->
+<!--                           <p><i class="fas fa-dollar-sign"></i> ${movie[10] || 'N/A'}</p>-->
+<!--                       </div>-->
+<!--                       <div class="card-actions">-->
+<!--                           <button class="btn-details" onclick="toggleDetails(this)">Show Details</button>-->
+<!--                           <a href="${movie[11]}" target="_blank" class="btn-link">-->
+<!--                               <i class="fas fa-external-link-alt"></i> Learn More-->
+<!--                           </a>-->
+<!--                       </div>-->
+<!--                   </div>-->
+<!--               </article>-->
+<!--           `;-->
+<!--       }-->
 
-            try {
-                const currentUrl = new URL(window.location.href);
-                currentUrl.pathname = '/load_more';
-                currentUrl.searchParams.set('page', currentPage + 1);
+<!--       async function loadMoreMovies() {-->
+<!--           if (loadingMore) return;-->
+<!--           loadingMore = true;-->
 
-                const response = await fetch(currentUrl.toString());
-                const data = await response.json();
+<!--           const loadMoreBtn = document.getElementById('load-more-btn');-->
+<!--           loadMoreBtn.textContent = 'Loading...';-->
 
-                if (data.movies && data.movies.length > 0) {
-                    data.movies.forEach(movie => {
-                        moviesGrid.insertAdjacentHTML('beforeend', createMovieCard(movie));
-                    });
+<!--           try {-->
+<!--               const response = await fetch(`/load_more?page=${currentPage + 1}`);-->
+<!--               const data = await response.json();-->
 
-                    currentPage++;
-                    loadedCountElement.textContent = moviesGrid.querySelectorAll('.movie-card').length;
-                    totalCountElement.textContent = data.totalMovies;
-                }
+<!--               data.movies.forEach(movie => {-->
+<!--                   moviesGrid.innerHTML += createMovieCard(movie);-->
+<!--               });-->
 
-                hasMore = data.hasMore;
+<!--               currentPage++;-->
 
-            } catch (error) {
-                console.error('Error loading more movies:', error);
-            } finally {
-                loading = false;
-                loadingSpinner.classList.remove('visible');
-            }
-        }
+<!--               if (!data.hasMore) {-->
+<!--                   loadMoreBtn.style.display = 'none';-->
+<!--               } else {-->
+<!--                   loadMoreBtn.textContent = 'Load More Movies';-->
+<!--               }-->
+<!--           } catch (error) {-->
+<!--               console.error('Error loading more movies:', error);-->
+<!--               loadMoreBtn.textContent = 'Error Loading Movies';-->
+<!--           } finally {-->
+<!--               loadingMore = false;-->
+<!--           }-->
+<!--       }-->
 
-        // Implement Intersection Observer for infinite scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !loading) {
-                    loadMoreMovies();
-                }
-            });
-        }, {
-            rootMargin: '100px'
-        });
-
-        // Start observing
-        const target = document.querySelector('.observer-target');
-        if (target) observer.observe(target);
-
-        // Update loaded count on initial load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadedCountElement.textContent = moviesGrid.querySelectorAll('.movie-card').length;
-        });
-   </script>
+<!--       // Add load more button-->
+<!--       const loadMoreBtn = document.createElement('button');-->
+<!--       loadMoreBtn.id = 'load-more-btn';-->
+<!--       loadMoreBtn.className = 'load-more-button';-->
+<!--       loadMoreBtn.textContent = 'Load More Movies';-->
+<!--       loadMoreBtn.onclick = loadMoreMovies;-->
+<!--       document.querySelector('.results-section').appendChild(loadMoreBtn);-->
+<!--   </script>-->
 </body>
 </html>
