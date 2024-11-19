@@ -260,18 +260,16 @@ body {
     gap: 0.5rem;
 }
 
-/*.collapsible-content {*/
-/*    max-height: 0;*/
-/*    overflow: hidden;*/
-/*    transition: max-height 0.3s ease-out;*/
-/*    margin-top: 1rem;*/
-/*    padding-top: 1rem;*/
-/*    border-top: 1px solid var(--border-color);*/
-/*}*/
-
-.collapsible-content.expanded {
-    max-height: 500px;
+.collapsible-content {
+    display: none;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
 }
+
+/*.collapsible-content.expanded {*/
+/*    max-height: 500px;*/
+/*}*/
 
 .card-actions {
     display: flex;
@@ -396,12 +394,6 @@ input:focus {
     outline-offset: 2px;
 }
 
-/* Animation for card expansion */
-.collapsible-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
 
 .rating-inputs input::-webkit-outer-spin-button,
 .rating-inputs input::-webkit-inner-spin-button {
