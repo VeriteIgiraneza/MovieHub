@@ -469,14 +469,6 @@ input:focus {
     color: var(--text-secondary);
 }
 
-/*.form-group input {*/
-/*    width: 100%;*/
-/*    padding: 0.75rem 1rem 0.75rem 2.5rem;*/
-/*    border: 1px solid var(--border-color);*/
-/*    border-radius: var(--radius);*/
-/*    font-size: 1rem;*/
-/*}*/
-
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-color);
@@ -499,11 +491,6 @@ input:focus {
     margin-bottom: 2rem;
     box-shadow: var(--shadow);
 }
-
-/*.add-movie-form {*/
-/*    display: grid;*/
-/*    gap: 1rem;*/
-/*}*/
 
 .dashboard-container {
     max-width: 1200px;
@@ -741,7 +728,8 @@ textarea {
 /* Button styles */
 .modal .form-actions {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
     gap: 1rem;
     margin-top: 1.5rem;
     padding-top: 1rem;
