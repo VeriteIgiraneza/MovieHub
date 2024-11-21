@@ -461,13 +461,13 @@ input:focus {
     color: var(--text-primary);
 }
 
-.form-group i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-}
+/*.form-group i {*/
+/*    position: absolute;*/
+/*    left: 1rem;*/
+/*    top: 50%;*/
+/*    transform: translateY(-50%);*/
+/*    color: var(--text-secondary);*/
+/*}*/
 
 .form-group input:focus {
     outline: none;
@@ -672,26 +672,12 @@ textarea {
     gap: 1rem;
 }
 
-/*.modal .form-group {*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    gap: 0.25rem;*/
-/*}*/
-
-.modal /*.form-group label*/ {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    /*color: var(--text-secondary);*/
-    margin-bottom: 0.25rem;
-}
-
 .modal .form-group input,
 .modal .form-group textarea,
 .modal .form-group select {
     width: 100%;
-    padding: 0.5rem;
+    height: 2.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 2.25rem;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     font-size: 0.9rem;
@@ -700,29 +686,36 @@ textarea {
 
 .modal .form-group textarea {
     min-height: 100px;
-    resize: vertical;
+    padding-top: 0.75rem;
 }
 
 .modal .genre-checkboxes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 0.75rem;
+    gap: 0.5rem;
     padding: 1rem;
     background: var(--background);
     border-radius: var(--radius);
-    margin-top: 0.5rem;
+    margin-top: 0.5rem; /*Commmented*/
 }
 
 .modal .checkbox-label {
+    transform: translateY(10px);
+
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .modal .checkbox-label input[type="checkbox"] {
-    width: auto;
-    margin-right: 0.5rem;
+    width: 16px;
+    height: 16px;
+    margin-right: 0;
+    /*margin-top: 3px;*/
+    padding: 0;
 }
 
 /* Button styles */
@@ -842,4 +835,51 @@ textarea {
 
 .nav-link.btn-add:hover {
     background: var(--primary-hover);
+}
+
+.modal .form-group label i {
+    margin-right: 0.75rem;
+}
+
+
+.modal .form-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.modal .form-group i {
+    position: absolute;
+    left: 0.75rem;
+    top: 2.75rem; /* Position at input field height */
+    color: var(--text-secondary);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.modal .form-group textarea ~ i {
+    top: 3rem; /* Slightly higher for textarea */
+}
+
+.modal .form-group input,
+.modal .form-group textarea,
+.modal .form-group select {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 2.25rem; /* Left padding for icon */
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    background-color: var(--background);
+}
+
+.modal .form-group textarea {
+    min-height: 100px;
+    padding-top: 0.75rem;
 }
