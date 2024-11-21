@@ -461,14 +461,6 @@ input:focus {
     color: var(--text-primary);
 }
 
-/*.form-group i {*/
-/*    position: absolute;*/
-/*    left: 1rem;*/
-/*    top: 50%;*/
-/*    transform: translateY(-50%);*/
-/*    color: var(--text-secondary);*/
-/*}*/
-
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-color);
@@ -692,7 +684,7 @@ textarea {
 .modal .genre-checkboxes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 0.5rem;
+    gap: 0.25rem;
     padding: 1rem;
     background: var(--background);
     border-radius: var(--radius);
