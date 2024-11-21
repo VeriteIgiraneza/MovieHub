@@ -29,7 +29,7 @@
 
    <main class="container">
        {% if error %}
-           <div class="alert alert-error">
+           <div class="alert alert-error" data-context="{{ error_context }}" id="error-message">
                {{ error }}
            </div>
        {% endif %}
@@ -177,11 +177,11 @@
             </button>
         </div>
 
-        {% if error %}
-            <div class="alert alert-error">
-                {{ error }}
-            </div>
-        {% endif %}
+<!--        {% if error %}-->
+<!--            <div class="alert alert-error">-->
+<!--                {{ error }}-->
+<!--            </div>-->
+<!--        {% endif %}-->
 
         <form class="add-movie-form" action="{{ url_for('add_movie') }}" method="POST">
             <div class="form-row">
@@ -265,76 +265,87 @@
 
 
    <script>
-       function updateSort(value) {
-           const currentUrl = new URL(window.location.href);
-           currentUrl.searchParams.set('sort', value);
-           window.location.href = currentUrl.toString();
-       }
+    // Sort functionality
+        function updateSort(value) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('sort', value);
+            window.location.href = currentUrl.toString();
+        }
 
-       function toggleDetails(button) {
-           const card = button.closest('.movie-card');
-           const content = card.querySelector('.collapsible-content');
-           const isExpanded = content.classList.toggle('expanded');
-           button.textContent = isExpanded ? 'Hide Details' : 'Show Details';
-       }
+        // Movie details toggle
+        function toggleDetails(button) {
+            const card = button.closest('.movie-card');
+            const content = card.querySelector('.collapsible-content');
+            const isExpanded = content.classList.toggle('expanded');
+            button.textContent = isExpanded ? 'Hide Details' : 'Show Details';
+        }
 
-       function showSearch(type) {
-           const textSearch = document.getElementById('text-search');
-           const filterSearch = document.getElementById('filter-search');
-           const buttons = document.querySelectorAll('.tab-btn');
+        // Search type toggle
+        function showSearch(type) {
+            const textSearch = document.getElementById('text-search');
+            const filterSearch = document.getElementById('filter-search');
+            const buttons = document.querySelectorAll('.tab-btn');
 
-           if (type === 'text') {
-               textSearch.classList.remove('hidden');
-               filterSearch.classList.add('hidden');
-               buttons[0].classList.add('active');
-               buttons[1].classList.remove('active');
-           } else {
-               textSearch.classList.add('hidden');
-               filterSearch.classList.remove('hidden');
-               buttons[0].classList.remove('active');
-               buttons[1].classList.add('active');
-           }
-       }
+            if (type === 'text') {
+                textSearch.classList.remove('hidden');
+                filterSearch.classList.add('hidden');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                textSearch.classList.add('hidden');
+                filterSearch.classList.remove('hidden');
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+            }
+        }
 
+        // Modal functions
+        function openModal() {
+            const modal = document.getElementById('addMovieModal');
+            if (modal) {
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
 
-<!--   script>-->
+        function closeModal() {
+            const modal = document.getElementById('addMovieModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
 
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('addMovieModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
 
-<!--<script>-->
-function openModal() {
-    document.getElementById('addMovieModal').style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent scrolling of background
-}
+            // Close modal on escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
+            });
 
-function closeModal() {
-    document.getElementById('addMovieModal').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restore scrolling
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('addMovieModal');
-    if (event.target === modal) {
-        closeModal();
-    }
-}
-
-// Close modal on escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeModal();
-    }
-});
-
-// If there's an error message, automatically open the modal
-document.addEventListener('DOMContentLoaded', function() {
-    const errorMessage = document.querySelector('.alert-error');
-    if (errorMessage) {
-        openModal();
-    }
-});
-</script>
-
-
+            // Only show modal for add-movie errors
+            const errorMessage = document.getElementById('error-message');
+            const isAddMovieError = errorMessage && errorMessage.dataset.context === 'add-movie';
+            const hasFormData = document.querySelector('[name="form_data"]');
+            if (isAddMovieError || hasFormData) {
+                openModal();
+            } else {
+                closeModal();
+            }
+        });
+        if (window.location.pathname === '/') {
+            closeModal();
+        }
+   </script>
 </body>
 </html>

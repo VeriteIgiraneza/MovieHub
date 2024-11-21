@@ -1,17 +1,14 @@
 from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
 import mysql.connector
 # from flask_bcrypt import Bcrypt
-import re
+# import re
 import logging
 # from datetime import timedelta
 
-from functools import wraps
+# from functools import wraps
 
 
 app = Flask(__name__)
-# app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-# app.config['SECRET_KEY'] = 'your_secret_key'
-# bcrypt = Bcrypt(app)
 
 # Configure logging
 logging.basicConfig(
@@ -214,10 +211,13 @@ def index():
         return render_template('index.html',
                              movies=movies,
                              genres=genres)
-                             # user=session.get('username'))
+
     except Exception as e:
         logger.error(f"Error in index route: {e}")
-        return render_template('index.html', error="An error occurred while searching movies")
+        return render_template('index.html',
+                               error="An error occurred while searching movies",
+                               error_context='search',
+                               genres=get_genres())
 
 
 @app.route('/filter')
@@ -234,9 +234,15 @@ def filter_movies():
 
         if min_rating or max_rating:
             if min_rating and not validate_rating(min_rating):
-                return render_template('index.html', error="Invalid minimum rating")
+                return render_template('index.html',
+                                       error="Invalid minimum rating",
+                                       error_context='search',
+                                       genres=get_genres())
             if max_rating and not validate_rating(max_rating):
-                return render_template('index.html', error="Invalid maximum rating")
+                return render_template('index.html',
+                                       error="Invalid maximum rating",
+                                       error_context='search',
+                                       genres=get_genres())
 
             search_params['min_rating'] = min_rating
             search_params['max_rating'] = max_rating
@@ -266,7 +272,10 @@ def filter_movies():
                                genre_name=genre_name)
     except Exception as e:
         logger.error(f"Error in filter route: {e}")
-        return render_template('index.html', error="An error occurred while searching movies")
+        return render_template('index.html',
+                               error="An error occurred while searching movies",
+                               error_context='search',
+                               genres=get_genres())
 
 @app.route('/search')
 def search():
@@ -282,9 +291,15 @@ def search():
 
         # Validate ratings
         if search_params['min_rating'] and not validate_rating(search_params['min_rating']):
-            return render_template('index.html', error="Invalid minimum rating")
+            return render_template('index.html',
+                                   error="Invalid minimum rating",
+                                   error_context='search',
+                                   genres=get_genres())
         if search_params['max_rating'] and not validate_rating(search_params['max_rating']):
-            return render_template('index.html', error="Invalid maximum rating")
+            return render_template('index.html',
+                                   error="Invalid maximum rating",
+                                   error_context='search',
+                                   gernes=get_genres())
 
         db, cursor = get_db()
         query, params = build_movie_query(search_params)
@@ -297,7 +312,10 @@ def search():
                                search_params=search_params)
     except Exception as e:
         logger.error(f"Error in search route: {e}")
-        return render_template('index.html', error="An error occurred while searching movies")
+        return render_template('index.html',
+                               error="An error occurred while searching movies",
+                               error_context='search',
+                               genres=get_genres())
 
 @app.teardown_appcontext
 def teardown_db(exception):
@@ -311,11 +329,15 @@ def teardown_db(exception):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('index.html', error="Page not found"), 404
+    return render_template('index.html',
+                           error="Page not found",
+                           error_context='search'), 404
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    return render_template('index.html', error="Internal server error"), 500
+    return render_template('index.html',
+                           error="Internal server error",
+                           error_context='search'), 500
 
 
 @app.route('/dashboard')
@@ -459,14 +481,19 @@ def add_movie():
         if not movie_data['title']:
             return render_template('index.html',
                                    error="Title is required",
-                                   genres=get_genres())
+                                   error_context='add-movie',
+                                   genres=get_genres(),
+                                   form_data=movie_data,
+                                   is_add_movie=True)
 
         # Check for duplicate title
         if check_duplicate_title(cursor, movie_data['title']):
             return render_template('index.html',
                                    error=f"A movie with the title '{movie_data['title']}' already exists in the database.",
+                                   error_context='add-movie',
                                    genres=get_genres(),
-                                   form_data=movie_data)  # Pass back the form data to preserve user input
+                                   form_data=movie_data,
+                                   is_add_movie=True)
 
         # Begin transaction
         cursor.execute("START TRANSACTION")
@@ -492,6 +519,7 @@ def add_movie():
             logger.error(f"Error adding movie: {e}")
             return render_template('index.html',
                                    error="Failed to add movie. Please try again.",
+                                   error_context='add-movie',
                                    genres=get_genres(),
                                    form_data=movie_data)  # Pass back the form data to preserve user input
 
