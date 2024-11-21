@@ -1,16 +1,13 @@
 from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
 import mysql.connector
-# from flask_bcrypt import Bcrypt
 # import re
 import logging
-# from datetime import timedelta
 
 # from functools import wraps
 
 
 app = Flask(__name__)
 
-# Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -21,10 +18,10 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     try:
         return mysql.connector.connect(
-            host="cse335-fall-2024.c924km8o85q2.us-east-1.rds.amazonaws.com",
-            user="v0igir01",
-            password="2c3e13850d",
-            database="student_v0igir01_db",
+            host="",
+            user="",
+            password="",
+            database="",
             connection_timeout=5
         )
     except mysql.connector.Error as err:
