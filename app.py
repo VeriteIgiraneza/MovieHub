@@ -1,18 +1,17 @@
 from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
 import mysql.connector
-from flask_bcrypt import Bcrypt
+# from flask_bcrypt import Bcrypt
 import re
 import logging
-from datetime import timedelta
+# from datetime import timedelta
 
 from functools import wraps
 
-EMAIL_PATTERN = re.compile(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 
 app = Flask(__name__)
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-app.config['SECRET_KEY'] = 'your_secret_key'
-bcrypt = Bcrypt(app)
+# app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+# app.config['SECRET_KEY'] = 'your_secret_key'
+# bcrypt = Bcrypt(app)
 
 # Configure logging
 logging.basicConfig(
@@ -25,10 +24,10 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     try:
         return mysql.connector.connect(
-            host="cse335-fall-2024.c924km8o85q2.us-east-1.rds.amazonaws.com",
-            user="v0igir01",
-            password="2c3e13850d",
-            database="student_v0igir01_db",
+            host="",
+            user="",
+            password="",
+            database="",
             connection_timeout=5
         )
     except mysql.connector.Error as err:
@@ -214,8 +213,8 @@ def index():
 
         return render_template('index.html',
                              movies=movies,
-                             genres=genres,
-                             user=session.get('username'))
+                             genres=genres)
+                             # user=session.get('username'))
     except Exception as e:
         logger.error(f"Error in index route: {e}")
         return render_template('index.html', error="An error occurred while searching movies")
@@ -352,57 +351,191 @@ def dashboard():
         genres = get_genres()
         return render_template('dashboard.html',
                                movies=movies,
-                               genres=genres,
-                               username=session.get('username'))
+                               genres=genres)
+                               # username=session.get('username'))
     except Exception as e:
         logger.error(f"Dashboard error: {e}")
         return redirect(url_for('index'))
 
 
-# Add to app.py
-# @app.route('/load_more')
-# def load_more():
-#     page = int(request.args.get('page', 1))
-#     limit = 9999
-#     offset = (page - 1) * limit
-#
-#     try:
-#         db, cursor = get_db()
-#         query = """
-#             SELECT DISTINCT
-#                 m.ID, m.Title, ROUND(r.Rating, 1) as Rating,
-#                 m.Runtime, GROUP_CONCAT(DISTINCT g.GenreName) as Genres,
-#                 m.Metascore, m.Plot,
-#                 GROUP_CONCAT(DISTINCT d.DirectorName) as Directors,
-#                 GROUP_CONCAT(DISTINCT s.StarName) as Stars,
-#                 r.Votes, CONCAT('$', FORMAT(m.Gross, 2)) as Gross,
-#                 m.Link
-#             FROM Movies m
-#             LEFT JOIN Ratings r ON m.ID = r.MovieID
-#             LEFT JOIN MovieGenres mg ON m.ID = mg.MovieID
-#             LEFT JOIN Genres g ON mg.GenreID = g.GenreID
-#             LEFT JOIN MovieDirectors md ON m.ID = md.MovieID
-#             LEFT JOIN Directors d ON md.DirectorID = d.DirectorID
-#             LEFT JOIN MovieStars ms ON m.ID = ms.MovieID
-#             LEFT JOIN Stars s ON ms.StarID = s.StarID
-#             GROUP BY m.ID
-#             ORDER BY r.Rating DESC
-#             LIMIT %s OFFSET %s
-#         """
-#         cursor.execute(query, (limit, offset))
-#         movies = cursor.fetchall()
-#
-#         # Check if there are more movies
-#         cursor.execute("SELECT COUNT(*) FROM Movies")
-#         total = cursor.fetchone()[0]
-#         has_more = (offset + limit) < total
-#
-#         return jsonify({
-#             'movies': movies,
-#             'hasMore': has_more
-#         })
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 500
+def check_duplicate_title(cursor, title):
+    """Check if a movie with this title already exists"""
+    cursor.execute("SELECT ID FROM Movies WHERE Title = %s", (title,))
+    return cursor.fetchone() is not None
+
+
+def insert_movie(cursor, movie_data):
+    """Insert basic movie info and return the movie ID"""
+    insert_movie_query = """
+        INSERT INTO Movies (Title, Runtime, Metascore, Plot, Gross, Link)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(insert_movie_query, (
+        movie_data['title'],
+        movie_data['runtime'],
+        movie_data['metascore'],
+        movie_data['plot'],
+        movie_data['gross'],
+        movie_data['link']
+    ))
+    return cursor.lastrowid
+
+
+def insert_directors(cursor, movie_id, directors_string):
+    """Insert directors and link them to the movie"""
+    if not directors_string:
+        return
+
+    directors = [d.strip() for d in directors_string.split(',')]
+    for director in directors:
+        # Insert director if not exists
+        cursor.execute("INSERT IGNORE INTO Directors (DirectorName) VALUES (%s)", (director,))
+        cursor.execute("SELECT DirectorID FROM Directors WHERE DirectorName = %s", (director,))
+        director_id = cursor.fetchone()[0]
+
+        # Link director to movie
+        cursor.execute("INSERT INTO MovieDirectors (MovieID, DirectorID) VALUES (%s, %s)",
+                       (movie_id, director_id))
+
+
+def insert_stars(cursor, movie_id, stars_string):
+    """Insert stars and link them to the movie"""
+    if not stars_string:
+        return
+
+    stars = [s.strip() for s in stars_string.split(',')]
+    for star in stars:
+        # Insert star if not exists
+        cursor.execute("INSERT IGNORE INTO Stars (StarName) VALUES (%s)", (star,))
+        cursor.execute("SELECT StarID FROM Stars WHERE StarName = %s", (star,))
+        star_id = cursor.fetchone()[0]
+
+        # Link star to movie
+        cursor.execute("INSERT INTO MovieStars (MovieID, StarID) VALUES (%s, %s)",
+                       (movie_id, star_id))
+
+
+def insert_genres(cursor, movie_id, genre_ids):
+    """Link selected genres to the movie"""
+    if not genre_ids:
+        return
+
+    for genre_id in genre_ids:
+        cursor.execute("INSERT INTO MovieGenres (MovieID, GenreID) VALUES (%s, %s)",
+                       (movie_id, genre_id))
+
+
+def insert_rating(cursor, movie_id, rating, votes):
+    """Insert movie rating"""
+    if rating:
+        cursor.execute("""
+            INSERT INTO Ratings (MovieID, Rating, Votes)
+            VALUES (%s, %s, %s)
+        """, (movie_id, rating, votes or 0))
+
+
+@app.route('/add_movie', methods=['POST'])
+def add_movie():
+    try:
+        db, cursor = get_db()
+
+        # Get form data
+        movie_data = {
+            'title': request.form.get('title'),
+            'runtime': request.form.get('runtime'),
+            'metascore': request.form.get('metascore'),
+            'plot': request.form.get('plot'),
+            'gross': request.form.get('gross'),
+            'link': request.form.get('link'),
+            'directors': request.form.get('directors'),
+            'stars': request.form.get('stars')
+        }
+
+        rating = request.form.get('rating')
+        votes = request.form.get('votes')
+        genre_ids = request.form.getlist('genres')
+
+        # Validate required fields
+        if not movie_data['title']:
+            return render_template('index.html',
+                                   error="Title is required",
+                                   genres=get_genres())
+
+        # Check for duplicate title
+        if check_duplicate_title(cursor, movie_data['title']):
+            return render_template('index.html',
+                                   error=f"A movie with the title '{movie_data['title']}' already exists in the database.",
+                                   genres=get_genres(),
+                                   form_data=movie_data)  # Pass back the form data to preserve user input
+
+        # Begin transaction
+        cursor.execute("START TRANSACTION")
+
+        try:
+            # Insert movie and get its ID
+            movie_id = insert_movie(cursor, movie_data)
+
+            # Insert related data
+            insert_directors(cursor, movie_id, movie_data['directors'])
+            insert_stars(cursor, movie_id, movie_data['stars'])
+            insert_genres(cursor, movie_id, genre_ids)
+            insert_rating(cursor, movie_id, rating, votes)
+
+            # Commit transaction
+            db.commit()
+
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            # Rollback in case of error
+            db.rollback()
+            logger.error(f"Error adding movie: {e}")
+            return render_template('index.html',
+                                   error="Failed to add movie. Please try again.",
+                                   genres=get_genres(),
+                                   form_data=movie_data)  # Pass back the form data to preserve user input
+
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return render_template('index.html',
+                               error="Database error occurred. Please try again.",
+                               genres=get_genres(),
+                               form_data=movie_data)  # Pass back the form data to preserve user input
+
+
+def get_movies():
+    """Get all movies with their related data"""
+    db, cursor = get_db()
+    movies_query = """
+        SELECT DISTINCT
+            m.ID,
+            m.Title,
+            ROUND(r.Rating, 1) as Rating,
+            m.Runtime,
+            GROUP_CONCAT(DISTINCT g.GenreName ORDER BY g.GenreName SEPARATOR ', ') as Genres,
+            m.Metascore,
+            m.Plot,
+            GROUP_CONCAT(DISTINCT d.DirectorName ORDER BY d.DirectorName SEPARATOR ', ') as Directors,
+            GROUP_CONCAT(DISTINCT s.StarName ORDER BY s.StarName SEPARATOR ', ') as Stars,
+            r.Votes,
+            CONCAT('$', FORMAT(m.Gross, 2)) as Gross,
+            m.Link
+        FROM Movies m
+        LEFT JOIN Ratings r ON m.ID = r.MovieID
+        LEFT JOIN MovieGenres mg ON m.ID = mg.MovieID
+        LEFT JOIN Genres g ON mg.GenreID = g.GenreID
+        LEFT JOIN MovieDirectors md ON m.ID = md.MovieID
+        LEFT JOIN Directors d ON md.DirectorID = d.DirectorID
+        LEFT JOIN MovieStars ms ON m.ID = ms.MovieID
+        LEFT JOIN Stars s ON ms.StarID = s.StarID
+        GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
+        ORDER BY r.Rating DESC
+        LIMIT 9999
+    """
+    cursor.execute(movies_query)
+    return cursor.fetchall()
+
+
 
 
 if __name__ == '__main__':

@@ -469,13 +469,13 @@ input:focus {
     color: var(--text-secondary);
 }
 
-.form-group input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    font-size: 1rem;
-}
+/*.form-group input {*/
+/*    width: 100%;*/
+/*    padding: 0.75rem 1rem 0.75rem 2.5rem;*/
+/*    border: 1px solid var(--border-color);*/
+/*    border-radius: var(--radius);*/
+/*    font-size: 1rem;*/
+/*}*/
 
 .form-group input:focus {
     outline: none;
@@ -492,13 +492,6 @@ input:focus {
     font-weight: 500;
 }
 
-
-.dashboard-container {
-    max-width: 1200px;
-    margin: 6rem auto 2rem;
-    padding: 0 1rem;
-}
-
 .add-movie-section, .movie-list-section {
     background: var(--card-bg);
     border-radius: var(--radius);
@@ -507,50 +500,15 @@ input:focus {
     box-shadow: var(--shadow);
 }
 
-.add-movie-form {
-    display: grid;
-    gap: 1rem;
-}
+/*.add-movie-form {*/
+/*    display: grid;*/
+/*    gap: 1rem;*/
+/*}*/
 
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-group label {
-    font-weight: 500;
-    color: var(--text-secondary);
-}
-
-.form-group input,
-.form
-
-/* Dashboard Styles */
 .dashboard-container {
     max-width: 1200px;
     margin: 6rem auto 2rem;
     padding: 0 1rem;
-}
-
-.add-movie-section, .movie-list-section {
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
 }
 
 .genre-checkboxes {
@@ -628,4 +586,272 @@ textarea {
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     resize: vertical;
+}
+
+
+
+
+
+/* Add these styles to your style.css file */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-radius: var(--radius);
+    transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: var(--background);
+}
+
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: rgba(68, 176, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+}
+
+
+
+
+
+
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+/*.modal .form-group {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 0.25rem;*/
+/*}*/
+
+.modal /*.form-group label*/ {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    /*color: var(--text-secondary);*/
+    margin-bottom: 0.25rem;
+}
+
+.modal .form-group input,
+.modal .form-group textarea,
+.modal .form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    background-color: var(--background);
+}
+
+.modal .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modal .genre-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: var(--radius);
+    margin-top: 0.5rem;
+}
+
+.modal .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.modal .checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+/* Button styles */
+.modal .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.modal .btn-submit {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal .btn-submit:hover {
+    background: var(--primary-hover);
+}
+
+.modal .btn-cancel {
+    padding: 0.75rem 1.5rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal .btn-cancel:hover {
+    background: #dc2626;
+}
+
+/* Alert styles within modal */
+.modal .alert {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+}
+
+.modal .alert-error {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal {
+        padding: 10px;
+    }
+
+    .modal-content {
+        margin: 10px;
+    }
+
+    .modal .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal .genre-checkboxes {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+
+
+
+
+
+
+
+/* Add these styles for the Add Movie button in nav */
+.nav-link.btn-add {
+    background: var(--primary-color);
+    color: white !important;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link.btn-add:hover {
+    background: var(--primary-hover);
 }

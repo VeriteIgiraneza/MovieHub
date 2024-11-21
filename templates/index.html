@@ -17,7 +17,12 @@
                <h1>MovieHub</h1>
            </div>
            <div class="nav-links">
-               <a href="/" class="active">Home</a>
+               <a href="/" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <button onclick="openModal()" class="nav-link btn-add">
+                    <i class="fas fa-plus"></i> Add Movie
+                </button>
            </div>
        </div>
    </nav>
@@ -161,6 +166,104 @@
        </section>
    </main>
 
+
+
+   <div id="addMovieModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-plus-circle"></i> Add New Movie</h2>
+            <button class="close-button" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form class="add-movie-form" action="{{ url_for('add_movie') }}" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-film"></i> Title</label>
+                    <input type="text" name="title" required placeholder="Movie title">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-star"></i> Rating</label>
+                    <input type="number" name="rating" step="0.1" min="0" max="10" placeholder="0-10">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Runtime</label>
+                    <input type="text" name="runtime" placeholder="e.g., 120 min">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-chart-line"></i> Metascore</label>
+                    <input type="number" name="metascore" min="0" max="100" placeholder="0-100">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-book"></i> Plot</label>
+                <textarea name="plot" rows="3" placeholder="Movie plot summary"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-video"></i> Directors</label>
+                    <input type="text" name="directors" placeholder="Comma-separated directors">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Stars</label>
+                    <input type="text" name="stars" placeholder="Comma-separated stars">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-poll"></i> Votes</label>
+                    <input type="number" name="votes" min="0" placeholder="Number of votes">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Gross</label>
+                    <input type="number" name="gross" step="0.01" min="0" placeholder="Box office earnings">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-link"></i> Link</label>
+                <input type="url" name="link" placeholder="Movie link (e.g., IMDb URL)">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-tags"></i> Genres</label>
+                <div class="genre-checkboxes">
+                    {% for genre in genres %}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="genres" value="{{ genre[0] }}">
+                        {{ genre[1] }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-plus"></i> Add Movie
+                </button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
    <script>
        function updateSort(value) {
            const currentUrl = new URL(window.location.href);
@@ -194,6 +297,44 @@
        }
 
 
-   </script>-->
+<!--   script>-->
+
+
+<!--<script>-->
+function openModal() {
+    document.getElementById('addMovieModal').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling of background
+}
+
+function closeModal() {
+    document.getElementById('addMovieModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('addMovieModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// If there's an error message, automatically open the modal
+document.addEventListener('DOMContentLoaded', function() {
+    const errorMessage = document.querySelector('.alert-error');
+    if (errorMessage) {
+        openModal();
+    }
+});
+</script>
+
+
 </body>
 </html>
