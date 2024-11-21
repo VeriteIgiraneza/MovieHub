@@ -186,7 +186,7 @@
         <form class="add-movie-form" action="{{ url_for('add_movie') }}" method="POST">
             <div class="form-row">
                 <div class="form-group">
-                    <label><i class="fas fa-film"></i> Title</label>
+                    <label><i class="fas fa-tv"></i> Title</label>
                     <input type="text" name="title" required placeholder="Movie title">
                 </div>
                 <div class="form-group">
@@ -239,7 +239,7 @@
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-tags"></i> Genres</label>
+                <label><i class="fas fa-film"></i> Genres</label>
                 <div class="genre-checkboxes">
                     {% for genre in genres %}
                     <label class="checkbox-label">
