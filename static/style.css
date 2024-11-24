@@ -214,9 +214,13 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
+    align-items: stretch; /*sameheigth*/
 }
 
 .movie-card {
+    display: flex; /*sameheigth*/
+    flex-direction: column;/*sameheigth*/
+    height: 100%;/*sameheigth*/
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
@@ -251,6 +255,11 @@ body {
 
 .movie-details {
     padding: 1rem;
+    display: flex; /*sameheigth*/
+    flex-direction: column; /*sameheigth*/
+    flex: 1; /*sameheigth*/
+    position: relative; /*sameheigth*/
+    padding-bottom: 60px; /*sameheigth*/
 }
 
 .movie-details p {
@@ -261,22 +270,32 @@ body {
 }
 
 .collapsible-content {
+    display: none;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.0s ease-out;
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
+    opacity: 0;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .collapsible-content.expanded {
+    display: block;
     max-height: 500px;
+    opacity: 1;
 }
 
 .card-actions {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
+    position: absolute; /*sameheigth*/
+    bottom: 1rem; /*sameheigth*/
+    left: 1rem; /*sameheigth*/
+    right: 1rem; /*sameheigth*/
+    gap: 0.5rem; /*sameheigth*/
 }
 
 .btn-details, .btn-link {
@@ -567,11 +586,6 @@ textarea {
     resize: vertical;
 }
 
-
-
-
-
-/* Add these styles to your style.css file */
 .nav-link {
     display: flex;
     align-items: center;
@@ -600,12 +614,6 @@ textarea {
         gap: 0.5rem;
     }
 }
-
-
-
-
-
-
 
 .modal-header {
     display: flex;
@@ -875,4 +883,113 @@ textarea {
 .modal .form-group textarea {
     min-height: 100px;
     padding-top: 0.75rem;
+}
+
+/*.movie-actions {*/
+/*    display: flex;*/
+/*    gap: 0.5rem;*/
+/*    margin: 1rem 0;*/
+/*}*/
+
+/*.movie-actions .btn-edit,*/
+/*.movie-actions .btn-delete {*/
+/*    flex: 1;*/
+/*    padding: 0.5rem;*/
+/*    border-radius: var(--radius);*/
+/*    cursor: pointer;*/
+/*    text-align: center;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    gap: 0.5rem;*/
+/*    font-size: 0.9rem;*/
+/*    transition: all 0.2s;*/
+/*}*/
+
+/*.movie-actions .btn-edit {*/
+/*    background: var(--primary-color);*/
+/*    color: white;*/
+/*    border: none;*/
+/*}*/
+
+/*.movie-actions .btn-delete {*/
+/*    background: #ef4444;*/
+/*    color: white;*/
+/*    border: none;*/
+/*}*/
+
+/*.movie-actions .delete-form {*/
+/*    flex: 1;*/
+/*    margin: 0;*/
+/*}*/
+
+.movie-actions .delete-form button {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .movie-actions {
+        flex-direction: column;
+    }
+
+    .movie-actions .delete-form {
+        width: 100%;
+    }
+}
+
+.movie-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.movie-actions .btn-edit,
+.movie-actions .btn-delete {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.movie-actions .btn-edit {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.movie-actions .btn-delete {
+    background: #ef4444;
+    color: white;
+    border: none;
+}
+
+.movie-actions .delete-form {
+    flex: 1;
+    margin: 0;
+}
+
+.movie-details p:last-of-type {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.collapsible-content {
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+    display: block;
+    max-height: 500px;
+    opacity: 1;
 }

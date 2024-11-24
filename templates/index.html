@@ -150,6 +150,17 @@
                                <p><i class="fas fa-user"></i> {{ movie[8] if movie[8] else 'N/A' }}</p>
                                <p><i class="fas fa-poll"></i> {{ movie[9] if movie[9] else '0' }} votes</p>
                                <p><i class="fas fa-dollar-sign"></i> {{ movie[10] if movie[10] else 'N/A' }}</p>
+
+                               <div class="movie-actions">
+                                    <button class="btn-edit" onclick="openEditModal('{{ movie[0] }}', '{{ movie[1] }}', '{{ movie[3] }}', '{{ movie[5] }}', '{{ movie[6] }}', '{{ movie[7] }}', '{{ movie[8] }}', '{{ movie[2] }}', '{{ movie[9] }}', '{{ movie[10] }}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <form action="{{ url_for('delete_movie', movie_id=movie[0]) }}" method="POST" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                        <button type="submit" class="btn-delete">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                               </div>
                            </div>
 
                            <div class="card-actions">
@@ -173,6 +184,86 @@
            </div>
        </section>
    </main>
+
+
+
+
+
+    <div id="editMovieModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Movie</h2>
+                <button class="close-button" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="edit-movie-form" action="" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-tv"></i> Title</label>
+                        <input type="text" name="title" required placeholder="Movie title">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-star"></i> Rating</label>
+                        <input type="number" name="rating" step="0.1" min="0" max="10" placeholder="0-10">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Runtime</label>
+                        <input type="text" name="runtime" placeholder="e.g., 120 min">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chart-line"></i> Metascore</label>
+                        <input type="number" name="metascore" min="0" max="100" placeholder="0-100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Plot</label>
+                    <textarea name="plot" rows="3" placeholder="Movie plot summary"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-video"></i> Directors</label>
+                        <input type="text" name="directors" placeholder="Comma-separated directors">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Stars</label>
+                        <input type="text" name="stars" placeholder="Comma-separated stars">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-poll"></i> Votes</label>
+                        <input type="number" name="votes" min="0" placeholder="Number of votes">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-dollar-sign"></i> Gross</label>
+                        <input type="number" name="gross" step="0.01" min="0" placeholder="Box office earnings">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
 
 
 
@@ -354,6 +445,61 @@
         if (window.location.pathname === '/') {
             closeModal();
         }
+
+
+
+
+
+
+        function openEditModal(movieId, title, runtime, metascore, plot, directors, stars, rating, votes, gross) {
+            const modal = document.getElementById('editMovieModal');
+            const form = modal.querySelector('form');
+
+            // Set the form action
+            form.action = `/edit_movie/${movieId}`;
+
+            // Populate form fields
+            form.querySelector('[name="title"]').value = title;
+            form.querySelector('[name="runtime"]').value = runtime;
+            form.querySelector('[name="metascore"]').value = metascore;
+            form.querySelector('[name="plot"]').value = plot;
+            form.querySelector('[name="directors"]').value = directors;
+            form.querySelector('[name="stars"]').value = stars;
+            form.querySelector('[name="rating"]').value = rating;
+            form.querySelector('[name="votes"]').value = votes;
+            form.querySelector('[name="gross"]').value = gross ? gross.replace('$', '').replace(/,/g, '') : '';
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editMovieModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Update existing DOMContentLoaded event listener:
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing code...
+            window.onclick = function(event) {
+                const addModal = document.getElementById('addMovieModal');
+                const editModal = document.getElementById('editMovieModal');
+                if (event.target === addModal) {
+                    closeModal();
+                }
+                if (event.target === editModal) {
+                    closeEditModal();
+                }
+            };
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                    closeEditModal();
+                }
+            });
+        });
    </script>
 </body>
 </html>

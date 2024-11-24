@@ -200,7 +200,7 @@ def index():
             LEFT JOIN Stars s ON ms.StarID = s.StarID
             GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
             ORDER BY r.Rating DESC
-            LIMIT 9999
+            LIMIT 9
         """
         cursor.execute(movies_query)
         movies = cursor.fetchall()
@@ -336,6 +336,120 @@ def internal_server_error(e):
                            error="Internal server error",
                            error_context='search'), 500
 
+@app.route('/edit_movie/<int:movie_id>', methods=['POST'])
+def edit_movie(movie_id):
+    try:
+        db, cursor = get_db()
+
+        # Get form data
+        title = request.form.get('title')
+        runtime = request.form.get('runtime')
+        metascore = request.form.get('metascore')
+        plot = request.form.get('plot')
+        directors = request.form.get('directors')
+        stars = request.form.get('stars')
+        rating = request.form.get('rating')
+        votes = request.form.get('votes')
+        gross = request.form.get('gross')
+
+        # Start transaction
+        cursor.execute("START TRANSACTION")
+
+        try:
+            # Update movie details
+            update_movie_query = """
+                UPDATE Movies 
+                SET Title = %s, Runtime = %s, Metascore = %s, Plot = %s, Gross = %s
+                WHERE ID = %s
+            """
+            cursor.execute(update_movie_query, (title, runtime, metascore, plot, gross, movie_id))
+
+            # Update rating
+            if rating and votes:
+                update_rating_query = """
+                    UPDATE Ratings
+                    SET Rating = %s, Votes = %s
+                    WHERE MovieID = %s
+                """
+                cursor.execute(update_rating_query, (rating, votes, movie_id))
+
+            # Update directors
+            if directors:
+                # Delete existing directors
+                cursor.execute("DELETE FROM MovieDirectors WHERE MovieID = %s", (movie_id,))
+
+                # Add new directors
+                for director in [d.strip() for d in directors.split(',')]:
+                    cursor.execute("INSERT IGNORE INTO Directors (DirectorName) VALUES (%s)", (director,))
+                    cursor.execute("SELECT DirectorID FROM Directors WHERE DirectorName = %s", (director,))
+                    director_id = cursor.fetchone()[0]
+                    cursor.execute("INSERT INTO MovieDirectors (MovieID, DirectorID) VALUES (%s, %s)",
+                                   (movie_id, director_id))
+
+            # Update stars
+            if stars:
+                # Delete existing stars
+                cursor.execute("DELETE FROM MovieStars WHERE MovieID = %s", (movie_id,))
+
+                # Add new stars
+                for star in [s.strip() for s in stars.split(',')]:
+                    cursor.execute("INSERT IGNORE INTO Stars (StarName) VALUES (%s)", (star,))
+                    cursor.execute("SELECT StarID FROM Stars WHERE StarName = %s", (star,))
+                    star_id = cursor.fetchone()[0]
+                    cursor.execute("INSERT INTO MovieStars (MovieID, StarID) VALUES (%s, %s)",
+                                   (movie_id, star_id))
+
+            db.commit()
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error updating movie: {e}")
+            return render_template('index.html',
+                                   error="Failed to update movie",
+                                   error_context='edit-movie',
+                                   genres=get_genres())
+
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return render_template('index.html',
+                               error="Database error occurred",
+                               genres=get_genres())
+
+
+@app.route('/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(movie_id):
+    try:
+        db, cursor = get_db()
+
+        # Start transaction
+        cursor.execute("START TRANSACTION")
+
+        try:
+            # Delete related records first
+            cursor.execute("DELETE FROM MovieGenres WHERE MovieID = %s", (movie_id,))
+            cursor.execute("DELETE FROM MovieDirectors WHERE MovieID = %s", (movie_id,))
+            cursor.execute("DELETE FROM MovieStars WHERE MovieID = %s", (movie_id,))
+            cursor.execute("DELETE FROM Ratings WHERE MovieID = %s", (movie_id,))
+
+            # Finally delete the movie
+            cursor.execute("DELETE FROM Movies WHERE ID = %s", (movie_id,))
+
+            db.commit()
+            return redirect(url_for('index'))
+
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Error deleting movie: {e}")
+            return render_template('index.html',
+                                   error="Failed to delete movie",
+                                   genres=get_genres())
+
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        return render_template('index.html',
+                               error="Database error occurred",
+                               genres=get_genres())
 
 @app.route('/dashboard')
 def dashboard():
@@ -555,7 +669,7 @@ def get_movies():
         LEFT JOIN Stars s ON ms.StarID = s.StarID
         GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
         ORDER BY r.Rating DESC
-        LIMIT 9999
+        LIMIT 9
     """
     cursor.execute(movies_query)
     return cursor.fetchall()
