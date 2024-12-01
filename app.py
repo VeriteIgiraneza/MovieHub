@@ -18,10 +18,10 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     try:
         return mysql.connector.connect(
-            host="cse335-fall-2024.c924km8o85q2.us-east-1.rds.amazonaws.com",
-            user="v0igir01",
-            password="2c3e13850d",
-            database="student_v0igir01_db",
+            host="",
+            user="",
+            password="",
+            database="",
             connection_timeout=5
         )
     except mysql.connector.Error as err:
@@ -492,13 +492,11 @@ def dashboard():
 
 
 def check_duplicate_title(cursor, title):
-    """Check if a movie with this title already exists"""
     cursor.execute("SELECT ID FROM Movies WHERE Title = %s", (title,))
     return cursor.fetchone() is not None
 
 
 def insert_movie(cursor, movie_data):
-    """Insert basic movie info and return the movie ID"""
     insert_movie_query = """
         INSERT INTO Movies (Title, Runtime, Metascore, Plot, Gross, Link)
         VALUES (%s, %s, %s, %s, %s, %s)
@@ -515,41 +513,34 @@ def insert_movie(cursor, movie_data):
 
 
 def insert_directors(cursor, movie_id, directors_string):
-    """Insert directors and link them to the movie"""
     if not directors_string:
         return
 
     directors = [d.strip() for d in directors_string.split(',')]
     for director in directors:
-        # Insert director if not exists
         cursor.execute("INSERT IGNORE INTO Directors (DirectorName) VALUES (%s)", (director,))
         cursor.execute("SELECT DirectorID FROM Directors WHERE DirectorName = %s", (director,))
         director_id = cursor.fetchone()[0]
 
-        # Link director to movie
         cursor.execute("INSERT INTO MovieDirectors (MovieID, DirectorID) VALUES (%s, %s)",
                        (movie_id, director_id))
 
 
 def insert_stars(cursor, movie_id, stars_string):
-    """Insert stars and link them to the movie"""
     if not stars_string:
         return
 
     stars = [s.strip() for s in stars_string.split(',')]
     for star in stars:
-        # Insert star if not exists
         cursor.execute("INSERT IGNORE INTO Stars (StarName) VALUES (%s)", (star,))
         cursor.execute("SELECT StarID FROM Stars WHERE StarName = %s", (star,))
         star_id = cursor.fetchone()[0]
 
-        # Link star to movie
         cursor.execute("INSERT INTO MovieStars (MovieID, StarID) VALUES (%s, %s)",
                        (movie_id, star_id))
 
 
 def insert_genres(cursor, movie_id, genre_ids):
-    """Link selected genres to the movie"""
     if not genre_ids:
         return
 
@@ -559,7 +550,6 @@ def insert_genres(cursor, movie_id, genre_ids):
 
 
 def insert_rating(cursor, movie_id, rating, votes):
-    """Insert movie rating"""
     if rating:
         cursor.execute("""
             INSERT INTO Ratings (MovieID, Rating, Votes)
@@ -572,7 +562,6 @@ def add_movie():
     try:
         db, cursor = get_db()
 
-        # Get form data
         movie_data = {
             'title': request.form.get('title'),
             'runtime': request.form.get('runtime'),
@@ -588,7 +577,6 @@ def add_movie():
         votes = request.form.get('votes')
         genre_ids = request.form.getlist('genres')
 
-        # Validate required fields
         if not movie_data['title']:
             return render_template('index.html',
                                    error="Title is required",
@@ -597,7 +585,6 @@ def add_movie():
                                    form_data=movie_data,
                                    is_add_movie=True)
 
-        # Check for duplicate title
         if check_duplicate_title(cursor, movie_data['title']):
             return render_template('index.html',
                                    error=f"A movie with the title '{movie_data['title']}' already exists in the database.",
@@ -606,44 +593,38 @@ def add_movie():
                                    form_data=movie_data,
                                    is_add_movie=True)
 
-        # Begin transaction
         cursor.execute("START TRANSACTION")
 
         try:
-            # Insert movie and get its ID
             movie_id = insert_movie(cursor, movie_data)
 
-            # Insert related data
             insert_directors(cursor, movie_id, movie_data['directors'])
             insert_stars(cursor, movie_id, movie_data['stars'])
             insert_genres(cursor, movie_id, genre_ids)
             insert_rating(cursor, movie_id, rating, votes)
 
-            # Commit transaction
             db.commit()
 
             return redirect(url_for('index'))
 
         except Exception as e:
-            # Rollback in case of error
             db.rollback()
             logger.error(f"Error adding movie: {e}")
             return render_template('index.html',
                                    error="Failed to add movie. Please try again.",
                                    error_context='add-movie',
                                    genres=get_genres(),
-                                   form_data=movie_data)  # Pass back the form data to preserve user input
+                                   form_data=movie_data)
 
     except Exception as e:
         logger.error(f"Database error: {e}")
         return render_template('index.html',
                                error="Database error occurred. Please try again.",
                                genres=get_genres(),
-                               form_data=movie_data)  # Pass back the form data to preserve user input
+                               form_data=movie_data)
 
 
 def get_movies():
-    """Get all movies with their related data"""
     db, cursor = get_db()
     movies_query = """
         SELECT DISTINCT
@@ -673,9 +654,6 @@ def get_movies():
     """
     cursor.execute(movies_query)
     return cursor.fetchall()
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

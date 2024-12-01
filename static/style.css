@@ -269,18 +269,6 @@ body {
     gap: 0.5rem;
 }
 
-.collapsible-content {
-    display: none;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.0s ease-out;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
-    opacity: 0;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
-}
-
 .collapsible-content.expanded {
     display: block;
     max-height: 500px;
