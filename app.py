@@ -196,7 +196,7 @@ def index():
             LEFT JOIN Stars s ON ms.StarID = s.StarID
             GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
             ORDER BY r.Rating DESC
-            LIMIT 9
+            LIMIT 10000
         """
         cursor.execute(movies_query)
         movies = cursor.fetchall()
@@ -646,7 +646,7 @@ def get_movies():
         LEFT JOIN Stars s ON ms.StarID = s.StarID
         GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
         ORDER BY r.Rating DESC
-        LIMIT 9
+        LIMIT 10000
     """
     cursor.execute(movies_query)
     return cursor.fetchall()
