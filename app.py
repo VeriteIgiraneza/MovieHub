@@ -1,10 +1,6 @@
 from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
 import mysql.connector
-# import re
 import logging
-
-# from functools import wraps
-
 
 app = Flask(__name__)
 
