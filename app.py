@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, render_template, request, redirect, g, url_for, session
+from flask import flash
 import mysql.connector
 import logging
 
 app = Flask(__name__)
+
+app.secret_key = '6e00fad506ee3db0325a8171d1c7d0f9'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -196,7 +199,7 @@ def index():
             LEFT JOIN Stars s ON ms.StarID = s.StarID
             GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
             ORDER BY r.Rating DESC
-            LIMIT 10000
+            LIMIT 9
         """
         cursor.execute(movies_query)
         movies = cursor.fetchall()
@@ -334,10 +337,10 @@ def internal_server_error(e):
 
 @app.route('/edit_movie/<int:movie_id>', methods=['POST'])
 def edit_movie(movie_id):
+    return_url = request.referrer
     try:
         db, cursor = get_db()
 
-        # Get form data
         title = request.form.get('title')
         runtime = request.form.get('runtime')
         metascore = request.form.get('metascore')
@@ -348,7 +351,6 @@ def edit_movie(movie_id):
         votes = request.form.get('votes')
         gross = request.form.get('gross')
 
-        # Start transaction
         cursor.execute("START TRANSACTION")
 
         try:
@@ -396,25 +398,25 @@ def edit_movie(movie_id):
                                    (movie_id, star_id))
 
             db.commit()
-            return redirect(url_for('index'))
+            flash('Movie updated successfully', 'success')
+            return redirect(return_url if return_url else url_for('index'))
 
         except Exception as e:
             db.rollback()
             logger.error(f"Error updating movie: {e}")
-            return render_template('index.html',
-                                   error="Failed to update movie",
-                                   error_context='edit-movie',
-                                   genres=get_genres())
+            flash('Failed to update movie', 'error')
+            return redirect(return_url if return_url else url_for('index.html'))
 
     except Exception as e:
         logger.error(f"Database error: {e}")
-        return render_template('index.html',
-                               error="Database error occurred",
-                               genres=get_genres())
+        flash('Database error occurred', 'error')
+        return redirect(return_url if return_url else url_for('index.html'))
 
 
 @app.route('/delete_movie/<int:movie_id>', methods=['POST'])
 def delete_movie(movie_id):
+    return_url = request.referrer
+
     try:
         db, cursor = get_db()
 
@@ -432,20 +434,19 @@ def delete_movie(movie_id):
             cursor.execute("DELETE FROM Movies WHERE ID = %s", (movie_id,))
 
             db.commit()
-            return redirect(url_for('index'))
+            flash('Movie successfully deleted', 'success')
+            return redirect(return_url if return_url else url_for('index'))
 
         except Exception as e:
             db.rollback()
             logger.error(f"Error deleting movie: {e}")
-            return render_template('index.html',
-                                   error="Failed to delete movie",
-                                   genres=get_genres())
+            flash('Failed to delete movie', 'error')
+            return redirect(return_url if return_url else url_for('index.html'))
 
     except Exception as e:
         logger.error(f"Database error: {e}")
-        return render_template('index.html',
-                               error="Database error occurred",
-                               genres=get_genres())
+        flash('Database error occurred', 'error')
+        return redirect(return_url if return_url else url_for('index.html'))
 
 @app.route('/dashboard')
 def dashboard():
@@ -600,12 +601,13 @@ def add_movie():
             insert_rating(cursor, movie_id, rating, votes)
 
             db.commit()
-
+            flash('Movie added successfully', 'success')
             return redirect(url_for('index'))
 
         except Exception as e:
             db.rollback()
             logger.error(f"Error adding movie: {e}")
+            flash('Failed to add movie', 'error')
             return render_template('index.html',
                                    error="Failed to add movie. Please try again.",
                                    error_context='add-movie',
@@ -614,6 +616,7 @@ def add_movie():
 
     except Exception as e:
         logger.error(f"Database error: {e}")
+        flash('Database error occurred', 'error')
         return render_template('index.html',
                                error="Database error occurred. Please try again.",
                                genres=get_genres(),
@@ -646,7 +649,7 @@ def get_movies():
         LEFT JOIN Stars s ON ms.StarID = s.StarID
         GROUP BY m.ID, m.Title, r.Rating, m.Runtime, m.Metascore, m.Plot, r.Votes, m.Gross, m.Link
         ORDER BY r.Rating DESC
-        LIMIT 10000
+        LIMIT 9
     """
     cursor.execute(movies_query)
     return cursor.fetchall()
