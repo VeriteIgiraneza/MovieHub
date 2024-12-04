@@ -5,7 +5,7 @@ import logging
 
 app = Flask(__name__)
 
-app.secret_key = '6e00fad506ee3db0325a8171d1c7d0f9'
+app.secret_key = ''
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -218,6 +218,7 @@ def index():
 
 @app.route('/filter')
 def filter_movies():
+    return_url = request.referrer
     try:
         min_rating = request.args.get('min_rating')
         max_rating = request.args.get('max_rating')
@@ -230,15 +231,11 @@ def filter_movies():
 
         if min_rating or max_rating:
             if min_rating and not validate_rating(min_rating):
-                return render_template('index.html',
-                                       error="Invalid minimum rating",
-                                       error_context='search',
-                                       genres=get_genres())
+                flash('Invalid minimum rating', 'error')
+                return redirect(return_url if return_url else url_for('index.html'))
             if max_rating and not validate_rating(max_rating):
-                return render_template('index.html',
-                                       error="Invalid maximum rating",
-                                       error_context='search',
-                                       genres=get_genres())
+                flash('Invalid maximum rating', 'error')
+                return redirect(return_url if return_url else url_for('index.html'))
 
             search_params['min_rating'] = min_rating
             search_params['max_rating'] = max_rating
@@ -268,10 +265,8 @@ def filter_movies():
                                genre_name=genre_name)
     except Exception as e:
         logger.error(f"Error in filter route: {e}")
-        return render_template('index.html',
-                               error="An error occurred while searching movies",
-                               error_context='search',
-                               genres=get_genres())
+        flash('An error occurred while filtering movies', 'error')
+        return redirect(return_url if return_url else url_for('index.html'))
 
 @app.route('/search')
 def search():
@@ -556,6 +551,7 @@ def insert_rating(cursor, movie_id, rating, votes):
 
 @app.route('/add_movie', methods=['POST'])
 def add_movie():
+    return_url = request.referrer
     try:
         db, cursor = get_db()
 
@@ -575,20 +571,12 @@ def add_movie():
         genre_ids = request.form.getlist('genres')
 
         if not movie_data['title']:
-            return render_template('index.html',
-                                   error="Title is required",
-                                   error_context='add-movie',
-                                   genres=get_genres(),
-                                   form_data=movie_data,
-                                   is_add_movie=True)
+            flash('Title is required', 'error')
+            return redirect(return_url if return_url else url_for('index.html'))
 
         if check_duplicate_title(cursor, movie_data['title']):
-            return render_template('index.html',
-                                   error=f"A movie with the title '{movie_data['title']}' already exists in the database.",
-                                   error_context='add-movie',
-                                   genres=get_genres(),
-                                   form_data=movie_data,
-                                   is_add_movie=True)
+            flash(f"A movie with the title '{movie_data['title']}' already exists in the database", 'error')
+            return redirect(return_url if return_url else url_for('index.html'))
 
         cursor.execute("START TRANSACTION")
 
@@ -602,25 +590,18 @@ def add_movie():
 
             db.commit()
             flash('Movie added successfully', 'success')
-            return redirect(url_for('index'))
+            return redirect(return_url if return_url else url_for('index'))
 
         except Exception as e:
             db.rollback()
             logger.error(f"Error adding movie: {e}")
             flash('Failed to add movie', 'error')
-            return render_template('index.html',
-                                   error="Failed to add movie. Please try again.",
-                                   error_context='add-movie',
-                                   genres=get_genres(),
-                                   form_data=movie_data)
+            return redirect(return_url if return_url else url_for('index'))
 
     except Exception as e:
         logger.error(f"Database error: {e}")
         flash('Database error occurred', 'error')
-        return render_template('index.html',
-                               error="Database error occurred. Please try again.",
-                               genres=get_genres(),
-                               form_data=movie_data)
+        return redirect(return_url if return_url else url_for('index'))
 
 
 def get_movies():
