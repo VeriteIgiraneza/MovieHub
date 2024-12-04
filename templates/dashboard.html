@@ -203,42 +203,6 @@
             </div>
         </section>
     </main>
-
-    <script>
-        function toggleEdit(movieId) {
-            const viewDiv = document.getElementById(`view-${movieId}`);
-            const editForm = document.getElementById(`edit-${movieId}`);
-
-            if (viewDiv.classList.contains('hidden')) {
-                viewDiv.classList.remove('hidden');
-                editForm.classList.add('hidden');
-            } else {
-                viewDiv.classList.add('hidden');
-                editForm.classList.remove('hidden');
-            }
-        }
-
-
-
-        // Show alert messages for a few seconds before fading out
-        document.addEventListener('DOMContentLoaded', function() {
-        const flashMessages = document.querySelectorAll('.flash-message');
-
-        flashMessages.forEach(message => {
-            // Remove the message from DOM after animation completes
-            setTimeout(() => {
-                message.remove();
-            }, 5500);
-
-            // Add click to dismiss
-            message.addEventListener('click', () => {
-                message.style.animation = 'fadeOut 0.3s ease-out forwards';
-                setTimeout(() => {
-                    message.remove();
-                }, 300);
-                });
-            });
-        });
-    </script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
