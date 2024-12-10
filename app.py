@@ -5,7 +5,7 @@ import logging
 
 app = Flask(__name__)
 
-app.secret_key = ''
+app.secret_key = '6e00fad506ee3db0325a8171d1c7d0f9'
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     try:
         return mysql.connector.connect(
-            host="",
-            user="",
-            password="",
-            database="",
+            host="cse335-fall-2024.c924km8o85q2.us-east-1.rds.amazonaws.com",
+            user="v0igir01",
+            password="2c3e13850d",
+            database="student_v0igir01_db",
             connection_timeout=1
         )
     except mysql.connector.Error as err:

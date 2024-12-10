@@ -960,7 +960,7 @@ textarea {
 .flash-message {
     padding: 1rem 1.5rem;
     border-radius: var(--radius);
-    background: white;
+    background: lightcyan;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: slideIn 0.3s ease-out forwards, fadeOut 2.5s ease-out 5s forwards;
     pointer-events: auto;
